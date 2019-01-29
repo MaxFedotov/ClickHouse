@@ -19,21 +19,15 @@ arr Array(LowCardinality(String))
 ) ENGINE = MergeTree PARTITION BY toMonday(dt)
 ORDER BY (dt, id) SETTINGS index_granularity = 8192;
 
-insert into test.table1 (dt, id, arr) values (toDate(now()), 1, ['aaa']);
-insert into test.table2 (dt, id, arr) values (toDate(now()), 1, ['aaa','bbb','ccc']);
+insert into test.table1 (dt, id, arr) values ('2019-01-14', 1, ['aaa']);
+insert into test.table2 (dt, id, arr) values ('2019-01-14', 1, ['aaa','bbb','ccc']);
 
-select dt,
-id,
-groupArrayArray(arr)
+select dt, id, groupArrayArray(arr)
 from (
-select dt, id, arr
-from test.table1
-where dt = today()
-and id = 1
-UNION ALL
-select dt, id, arr
-from test.table2
-where dt = today()
-and id = 1
+	select dt, id, arr from test.table1
+	where dt = today()and id = 1
+	UNION ALL
+	select dt, id, arr from test.table2
+	where dt = today() and id = 1
 )
 group by dt, id;
